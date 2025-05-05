@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>ProjectRush</title>
+<style>
+  /* Reset and base */
+  * {
+    box-sizing: border-box;
+  }
+
+  body, html {
+    margin: 0; padding: 0; height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: url('https://images.pexels.com/photos/256791/pexels-photo-256791.jpeg?auto=compress&cs=tinysrgb&w=1600') no-repeat center center fixed;
+    background-size: cover;
+    color: #333;
+  }
+
+  /* Top Advertisement banner */
+  #top-ad {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 60px;
+    background: linear-gradient(90deg, #861657 0%, #FF7E5F 100%);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    font-size: 1.2rem;
+    z-index: 1000;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    user-select: none;
+  }
+  #top-ad a {
+    color: #ffe7e7;
+    text-decoration: underline;
+    margin-left: 10px;
+  }
+  #top-ad a:hover {
+    color: #ffcccc;
+  }
+
+  /* Side Advertisement banners */
+  #side-ad-left,
+  #side-ad-right {
+    position: fixed;
+    top: 60px; /* below top ad */
+    width: 80px;
+    height: calc(100% - 60px);
+    background: linear-gradient(180deg, #861657 0%, #ff7e5f 100%);
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    user-select: none;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    z-index: 1000;
+  }
+  #side-ad-left {
+    left: 0;
+  }
+  #side-ad-right {
+    right: 0;
+  }
+  #side-ad-left a,
+  #side-ad-right a {
+    color: #ffe7e7;
+    text-decoration: underline;
+  }
+  #side-ad-left a:hover,
+  #side-ad-right a:hover {
+    color: #ffcccc;
+  }
+
+  /* Main content container */
+  #app-container {
+    padding-top: 75px; /* space for top ad */
+    padding-left: 90px; /* space for left side ad */
+    padding-right: 90px; /* space for right side ad */
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    box-sizing: border-box;
+  }
+
+  #app {
+    background: rgba(255 255 255 / 0.25);
+    border-radius: 10px;
+    box-shadow: 0 8px 32px 0 rgba(31,38,135,0.37);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    max-width: 350px;
+    width: 100%;
+    max-height: 700px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    background: rgba(42,157,143, 0.75);
+    color: white;
+    border-radius: 10px 10px 0 0;
+    padding: 15px 20px;
+    text-align: center;
+  }
+  header h1 {
+    margin: 0;
+    font-weight: 700;
+    font-size: 1.5rem;
+    user-select: none;
+  }
+
+  main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 15px 20px;
+    background: transparent;
+  }
+
+  .form-section {
+    margin-bottom: 20px;
+    background: transparent;
+  }
+
+  label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+    color: #222;
+    text-shadow: 0 0 3px rgba(255 255 255 / 0.85);
+  }
+
+  .input-font-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+  .input-font-group label {
+    margin: 0;
+  }
+
+  .input-font-group > input[type="text"],
+  .input-font-group > textarea,
+  .input-font-group > select,
+  .input-font-group > input[type="number"] {
+    width: 100%;
+    border: 1.5px solid rgba(255 255 255 / 0.8);
+    border-radius: 7px;
+    padding: 12px 14px;
+    font-size: 1rem;
+    font-family: inherit;
+    resize: vertical;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
+    background-color: rgba(255 255 255 / 0.8);
+    color: #222;
+  }
+  input[type="text"]:focus,
+  textarea:focus,
+  select:focus,
+  input[type="number"]:focus {
+    border-color: #2a9d8f;
+    outline: none;
+  }
+  textarea {
+    min-height: 80px;
+  }
+
+  .style-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .style-controls label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #222;
+    text-shadow: 0 0 3px rgba(255 255 255 / 0.85);
+  }
+  .style-controls input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    margin: 0;
+  }
+  .style-controls input[type="number"] {
+    max-width: 80px;
+    padding: 8px 10px;
+  }
+
+  #borderStyleSelect {
+    width: 100%;
+    border: 1.5px solid rgba(255 255 255 / 0.8);
+    border-radius: 7px;
+    padding: 12px 14px;
+    font-size: 1rem;
+    font-family: inherit;
+    box-sizing: border-box;
+    background-color: rgba(255 255 255 / 0.8);
+    color: #222;
+  }
+
+  .button-row {
+    margin-top: 12px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  button {
+    background: rgba(42,157,143, 0.8);
+    color: white;
+    border: none;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 14px 16px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    transition: background-color 0.3s ease;
+    user-select: none;
+    flex-grow: 1;
+    min-width: 0;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  }
+  button:hover:enabled {
+    background: rgba(42,157,143, 1);
+  }
+  button:disabled,
+  button[disabled]{
+    background: rgba(255 255 255 / 0.5);
+    color: #666;
+    cursor: not-allowed;
+    box-shadow:none;
+  }
+  #resetBtn {
+    background: rgba(192, 57, 43, 0.8);
+    flex-grow: 0;
+    min-width: 100px;
+  }
+  #resetBtn:hover:enabled {
+    background: rgba(192, 57, 43, 1);
+  }
+
+  #output {
+    border-top: 2px solid rgba(255 255 255 / 0.6);
+    margin-top: 15px;
+    padding-top: 15px;
+    text-align: center;
+  }
+
+  #projectFrontPage {
+    background: rgba(233, 245, 242, 0.6);
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgb(42 157 143 / 0.2);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    color: #264653;
+  }
+  #projectFrontPage h2 {
+    margin: 0 0 10px 0;
+  }
+  #projectFrontPage p.subtitle {
+    font-style: italic;
+    margin: 0 0 15px;
+  }
+  #projectFrontPage p.description,
+  #projectFrontPage p.studentName,
+  #projectFrontPage p.professorName {
+    margin: 0 0 10px;
+  }
+  #projectFrontPage img {
+    max-width: 100%;
+    max-height: 140px;
+    margin-top: 10px;
+    border-radius: 8px;
+    object-fit: contain;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+  }
+  
+  /* Word Art styles */
+  .word-art-rainbow {
+    background: linear-gradient(45deg, #f7971e, #ffd200, #f7971e, #ffd200);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: 900;
+    filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.3));
+  }
+
+  .word-art-fire {
+    background: linear-gradient(to right, #f12711, #f5af19);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: 700;
+    filter: drop-shadow(2px 2px 4px #d84315);
+  }
+
+  .word-art-neon {
+    color: #39ff14;
+    text-shadow:
+      0 0 5px #39ff14,
+      0 0 10px #39ff14,
+      0 0 20px #00ff00,
+      0 0 30px #00ff00,
+      0 0 40px #00ff00,
+      0 0 70px #39ff14,
+      0 0 80px #39ff14,
+      0 0 100px #39ff14;
+  }
+
+  .word-art-3dshadow {
+    color: #333;
+    text-shadow:
+      2px 2px 0 #666,
+      4px 4px 0 #999,
+      6px 6px 0 #bbb;
+  }
+
+  .word-art-vintage {
+    color: #6a4a3c;
+    font-family: "Courier New", Courier, monospace;
+    text-shadow: 1px 1px 0 #d8c3a5;
+    letter-spacing: 3px;
+  }
+
+  /* Advertisement Section */
+  #advertisement {
+    margin-top: 15px;
+    padding: 15px;
+    background: rgba(255 255 255 / 0.3);
+    color: #fff;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 120px;
+    user-select: none;
+    box-shadow: 0 5px 15px rgba(0 0 0 / 0.3);
+    text-shadow: 0 0 3px rgba(0 0 0 / 0.6);
+  }
+
+  #advertisement p {
+    margin: 0 0 8px 0;
+  }
+  #advertisement a {
+    color: #ffe7e7;
+    font-weight: 900;
+    text-decoration: underline;
+  }
+  #advertisement a:hover {
+    color: #ffcccc;
+  }
+
+  /* Responsive tweaks */
+  @media (min-width: 1024px) {
+    #app-container {
+      padding-left: 90px; 
+      padding-right: 90px;
+    }
+    #side-ad-left,
+    #side-ad-right {
+      display: flex;
+    }
+  }
+  @media (max-width: 1023px) {
+    #app-container {
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+    #side-ad-left,
+    #side-ad-right {
+      display: none;
+    }
+  }
+</style>
+</head>
+<body>
+  <div id="top-ad" role="banner" aria-label="Top advertisement banner">
+    <div>Top Advertisement Banner — <a href="https://www.example.com/advertise" target="_blank" rel="noopener noreferrer">Advertise with us</a></div>
+  </div>
+
+  <div id="side-ad-left" role="complementary" aria-label="Left side advertisement banner">
+    <a href="https://www.example.com/advertise" target="_blank" rel="noopener noreferrer" style="color:inherit; text-decoration:none;">Side Advertisement</a>
+  </div>
+
+  <div id="side-ad-right" role="complementary" aria-label="Right side advertisement banner">
+    <a href="https://www.example.com/advertise" target="_blank" rel="noopener noreferrer" style="color:inherit; text-decoration:none;">Side Advertisement</a>
+  </div>
+
+  <div id="app-container">
+    <div id="app" role="main" aria-label="ProjectRush front page generator">
+      <header>
+        <h1>ProjectRush</h1>
+      </header>
+      <main>
+        <section class="form-section" aria-label="Project details input">
+          <!-- Project Title -->
+          <div class="input-font-group">
+            <label for="projectTitle">Project Title</label>
+            <input type="text" id="projectTitle" placeholder="Enter your project title" aria-required="true" />
+            <select id="titleFontSelect" class="fontSelect" aria-label="Font selection for Project Title" title="Font for Project Title" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+              <option value="'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" selected>Segoe UI</option>
+              <option value="Roboto, sans-serif">Roboto</option>
+              <option value="Georgia, serif">Georgia</option>
+              <option value="'Times New Roman', Times, serif">Times New Roman</option>
+              <option value="'Bell MT', serif">Bell MT</option>
+              <option value="'Courier New', Courier, monospace">Courier New</option>
+              <option value="'Comic Sans MS', cursive, sans-serif">Comic Sans MS</option>
+            </select>
+            <div class="style-controls">
+              <label for="titleUnderline"><input type="checkbox" id="titleUnderline" aria-label="Underline Project Title"> Underline</label>
+              <label for="titleFontSize">Font Size (px): <input type="number" id="titleFontSize" min="10" max="72" value="24" aria-label="Font size for Project Title"></label>
+              <label for="titleWordArt">
+                Word Art Style:
+                <select id="titleWordArt" class="wordArtSelect" aria-label="Word art style for Project Title" title="Word art style for Project Title">
+                  <option value="">None</option>
+                  <option value="word-art-rainbow">Rainbow Gradient</option>
+                  <option value="word-art-fire">Fire Glow</option>
+                  <option value="word-art-neon">Neon Glow</option>
+                  <option value="word-art-3dshadow">3D Shadow</option>
+                  <option value="word-art-vintage">Vintage</option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <!-- Subtitle -->
+          <div class="input-font-group">
+            <label for="projectSubtitle">Subtitle</label>
+            <input type="text" id="projectSubtitle" placeholder="Enter a subtitle or tagline" aria-required="false" />
+            <select id="subtitleFontSelect" class="fontSelect" aria-label="Font selection for Subtitle" title="Font for Subtitle" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+              <option value="'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" selected>Segoe UI</option>
+              <option value="Roboto, sans-serif">Roboto</option>
+              <option value="Georgia, serif">Georgia</option>
+              <option value="'Times New Roman', Times, serif">Times New Roman</option>
+              <option value="'Bell MT', serif">Bell MT</option>
+              <option value="'Courier New', Courier, monospace">Courier New</option>
+              <option value="'Comic Sans MS', cursive, sans-serif">Comic Sans MS</option>
+            </select>
+            <div class="style-controls">
+              <label for="subtitleUnderline"><input type="checkbox" id="subtitleUnderline" aria-label="Underline Subtitle"> Underline</label>
+              <label for="subtitleFontSize">Font Size (px): <input type="number" id="subtitleFontSize" min="10" max="72" value="18" aria-label="Font size for Subtitle"></label>
+              <label for="subtitleWordArt">
+                Word Art Style:
+                <select id="subtitleWordArt" class="wordArtSelect" aria-label="Word art style for Subtitle" title="Word art style for Subtitle">
+                  <option value="">None</option>
+                  <option value="word-art-rainbow">Rainbow Gradient</option>
+                  <option value="word-art-fire">Fire Glow</option>
+                  <option value="word-art-neon">Neon Glow</option>
+                  <option value="word-art-3dshadow">3D Shadow</option>
+                  <option value="word-art-vintage">Vintage</option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="input-font-group">
+            <label for="projectDescription">Description</label>
+            <textarea id="projectDescription" placeholder="Brief description of your project" aria-required="false"></textarea>
+            <select id="descriptionFontSelect" class="fontSelect" aria-label="Font selection for Description" title="Font for Description" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+              <option value="'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" selected>Segoe UI</option>
+              <option value="Roboto, sans-serif">Roboto</option>
+              <option value="Georgia, serif">Georgia</option>
+              <option value="'Times New Roman', Times, serif">Times New Roman</option>
+              <option value="'Bell MT', serif">Bell MT</option>
+              <option value="'Courier New', Courier, monospace">Courier New</option>
+              <option value="'Comic Sans MS', cursive, sans-serif">Comic Sans MS</option>
+            </select>
+            <div class="style-controls">
+              <label for="descriptionUnderline"><input type="checkbox" id="descriptionUnderline" aria-label="Underline Description text"> Underline</label>
+              <label for="descriptionFontSize">Font Size (px): <input type="number" id="descriptionFontSize" min="10" max="72" value="14" aria-label="Font size for Description"></label>
+              <label for="descriptionWordArt">
+                Word Art Style:
+                <select id="descriptionWordArt" class="wordArtSelect" aria-label="Word art style for Description" title="Word art style for Description">
+                  <option value="">None</option>
+                  <option value="word-art-rainbow">Rainbow Gradient</option>
+                  <option value="word-art-fire">Fire Glow</option>
+                  <option value="word-art-neon">Neon Glow</option>
+                  <option value="word-art-3dshadow">3D Shadow</option>
+                  <option value="word-art-vintage">Vintage</option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <!-- Student Name -->
+          <div class="input-font-group">
+            <label for="studentName">Name of Student</label>
+            <input type="text" id="studentName" placeholder="Enter student's name" aria-required="false" />
+            <select id="studentFontSelect" class="fontSelect" aria-label="Font selection for Student Name" title="Font for Student Name" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+              <option value="'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" selected>Segoe UI</option>
+              <option value="Roboto, sans-serif">Roboto</option>
+              <option value="Georgia, serif">Georgia</option>
+              <option value="'Times New Roman', Times, serif">Times New Roman</option>
+              <option value="'Bell MT', serif">Bell MT</option>
+              <option value="'Courier New', Courier, monospace">Courier New</option>
+              <option value="'Comic Sans MS', cursive, sans-serif">Comic Sans MS</option>
+            </select>
+            <div class="style-controls">
+              <label for="studentUnderline"><input type="checkbox" id="studentUnderline" aria-label="Underline Student Name"> Underline</label>
+              <label for="studentFontSize">Font Size (px): <input type="number" id="studentFontSize" min="10" max="72" value="14" aria-label="Font size for Student Name"></label>
+              <label for="studentWordArt">
+                Word Art Style:
+                <select id="studentWordArt" class="wordArtSelect" aria-label="Word art style for Student Name" title="Word art style for Student Name">
+                  <option value="">None</option>
+                  <option value="word-art-rainbow">Rainbow Gradient</option>
+                  <option value="word-art-fire">Fire Glow</option>
+                  <option value="word-art-neon">Neon Glow</option>
+                  <option value="word-art-3dshadow">3D Shadow</option>
+                  <option value="word-art-vintage">Vintage</option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <!-- Professor Name -->
+          <div class="input-font-group">
+            <label for="professorName">Name of Professor</label>
+            <input type="text" id="professorName" placeholder="Enter professor's name" aria-required="false" />
+            <select id="professorFontSelect" class="fontSelect" aria-label="Font selection for Professor Name" title="Font for Professor Name" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+              <option value="'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" selected>Segoe UI</option>
+              <option value="Roboto, sans-serif">Roboto</option>
+              <option value="Georgia, serif">Georgia</option>
+              <option value="'Times New Roman', Times, serif">Times New Roman</option>
+              <option value="'Bell MT', serif">Bell MT</option>
+              <option value="'Courier New', Courier, monospace">Courier New</option>
+              <option value="'Comic Sans MS', cursive, sans-serif">Comic Sans MS</option>
+            </select>
+            <div class="style-controls">
+              <label for="professorUnderline"><input type="checkbox" id="professorUnderline" aria-label="Underline Professor Name"> Underline</label>
+              <label for="professorFontSize">Font Size (px): <input type="number" id="professorFontSize" min="10" max="72" value="14" aria-label="Font size for Professor Name"></label>
+              <label for="professorWordArt">
+                Word Art Style:
+                <select id="professorWordArt" class="wordArtSelect" aria-label="Word art style for Professor Name" title="Word art style for Professor Name">
+                  <option value="">None</option>
+                  <option value="word-art-rainbow">Rainbow Gradient</option>
+                  <option value="word-art-fire">Fire Glow</option>
+                  <option value="word-art-neon">Neon Glow</option>
+                  <option value="word-art-3dshadow">3D Shadow</option>
+                  <option value="word-art-vintage">Vintage</option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <label for="projectImage" style="margin-top:0;">Image URL (optional)</label>
+          <input type="text" id="projectImage" placeholder="https://example.com/image.png" aria-required="false" />
+
+          <label for="borderStyleSelect" style="margin-top:14px;">Page Border Style</label>
+          <select id="borderStyleSelect" aria-label="Page border style selection">
+            <option value="none" selected>None</option>
+            <option value="solid 4px #2a9d8f">Solid</option>
+            <option value="dashed 4px #2a9d8f">Dashed</option>
+            <option value="dotted 4px #2a9d8f">Dotted</option>
+            <option value="double 6px #2a9d8f">Double</option>
+            <option value="groove 6px #2a9d8f">Groove</option>
+          </select>
+
+          <div class="button-row">
+            <button id="generateBtn" aria-label="Generate front page preview">Generate Front Page</button>
+            <button id="downloadPdfBtn" aria-label="Download front page as PDF" disabled>Download PDF</button>
+            <button id="resetBtn" aria-label="Reset all fields and clear preview" type="button">Reset</button>
+          </div>
+        </section>
+
+        <section id="output" aria-live="polite" aria-relevant="additions" aria-atomic="true" aria-label="Project front page preview">
+          <!-- Generated content here -->
+        </section>
+
+        <section id="advertisement" aria-label="Bottom advertisement">
+          <p>Your Ad Here!</p>
+          <p>Reach Thousands of Developers & Innovators</p>
+          <a href="https://www.example.com/advertise" target="_blank" rel="noopener noreferrer">Advertise with us</a>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- jsPDF and html2canvas from CDN for PDF generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <script>
+    (() => {
+      const { jsPDF } = window.jspdf;
+      // Elements:
+      const elements = {
+        title: {
+          input: document.getElementById('projectTitle'),
+          fontSelect: document.getElementById('titleFontSelect'),
+          underline: document.getElementById('titleUnderline'),
+          fontSize: document.getElementById('titleFontSize'),
+          wordArt: document.getElementById('titleWordArt'),
+        },
+        subtitle: {
+          input: document.getElementById('projectSubtitle'),
+          fontSelect: document.getElementById('subtitleFontSelect'),
+          underline: document.getElementById('subtitleUnderline'),
+          fontSize: document.getElementById('subtitleFontSize'),
+          wordArt: document.getElementById('subtitleWordArt'),
+        },
+        description: {
+          input: document.getElementById('projectDescription'),
+          fontSelect: document.getElementById('descriptionFontSelect'),
+          underline: document.getElementById('descriptionUnderline'),
+          fontSize: document.getElementById('descriptionFontSize'),
+          wordArt: document.getElementById('descriptionWordArt'),
+        },
+        student: {
+          input: document.getElementById('studentName'),
+          fontSelect: document.getElementById('studentFontSelect'),
+          underline: document.getElementById('studentUnderline'),
+          fontSize: document.getElementById('studentFontSize'),
+          wordArt: document.getElementById('studentWordArt'),
+        },
+        professor: {
+          input: document.getElementById('professorName'),
+          fontSelect: document.getElementById('professorFontSelect'),
+          underline: document.getElementById('professorUnderline'),
+          fontSize: document.getElementById('professorFontSize'),
+          wordArt: document.getElementById('professorWordArt'),
+        },
+        imageInput: document.getElementById('projectImage'),
+        borderStyleSelect: document.getElementById('borderStyleSelect'),
+        outputSection: document.getElementById('output'),
+        generateBtn: document.getElementById('generateBtn'),
+        resetBtn: document.getElementById('resetBtn'),
+        downloadPdfBtn: document.getElementById('downloadPdfBtn'),
+      };
+
+      function escapeHtml(text) {
+        return text.replace(/&/g, "&amp;")
+                  .replace(/</g, "&lt;")
+                  .replace(/>/g, "&gt;")
+                  .replace(/"/g, "&quot;")
+                  .replace(/'/g, "&#039;");
+      }
+
+      function styleString({ fontSelect, underline, fontSize, wordArt }, baseStyle='') {
+        let styles = `
+          font-family:${fontSelect.value};
+          font-size:${(parseInt(fontSize.value, 10) || 14)}px;
+          text-decoration:${underline.checked ? 'underline' : 'none'};
+          ${baseStyle}
+        `;
+        if(wordArt.value){
+          styles += 'color: transparent;';
+          styles += `background: linear-gradient(45deg, #fb6f92, #ffd54e, #63e2ff, #f7797d);
+            -webkit-background-clip: text;
+            background-clip: text;
+            filter: drop-shadow(2px 2px 1px rgba(0,0,0,0.3));`;
+          switch(wordArt.value) {
+            case 'word-art-fire':
+              styles += 'background: linear-gradient(to right, #f12711, #f5af19); filter: drop-shadow(2px 2px 4px #d84315);';
+              break;
+            case 'word-art-neon':
+              styles += `color: #39ff14;
+                text-shadow: 0 0 5px #39ff14,
+                             0 0 10px #39ff14,
+                             0 0 20px #00ff00,
+                             0 0 30px #00ff00,
+                             0 0 40px #00ff00,
+                             0 0 70px #39ff14,
+                             0 0 80px #39ff14,
+                             0 0 100px #39ff14;
+                background: none;`;
+              break;
+            case 'word-art-3dshadow':
+              styles += `color: #333; 
+                text-shadow: 2px 2px 0 #666, 4px 4px 0 #999, 6px 6px 0 #bbb;
+                background: none;`;
+              break;
+            case 'word-art-vintage':
+              styles += `color: #6a4a3c; font-family: "Courier New", Courier, monospace; 
+                text-shadow: 1px 1px 0 #d8c3a5; letter-spacing: 3px;
+                background: none;`;
+              break;
+            // rainbow is default styles above
+          }
+        }
+        return styles;
+      }
+
+      function isValidUrl(str) {
+        try {
+          const url = new URL(str);
+          return url.protocol === "http:" || url.protocol === "https:";
+        } catch {
+          return false;
+        }
+      }
+
+      function generateFrontPage() {
+        const title = elements.title.input.value.trim();
+        if (!title) {
+          alert('Project Title is required to generate the front page');
+          elements.title.input.focus();
+          return;
+        }
+        const subtitle = elements.subtitle.input.value.trim();
+        const description = elements.description.input.value.trim();
+        const student = elements.student.input.value.trim();
+        const professor = elements.professor.input.value.trim();
+        const imageUrl = elements.imageInput.value.trim();
+        const borderStyle = elements.borderStyleSelect.value;
+
+        let html = `<div id="projectFrontPage" role="region" aria-label="Generated project front page" style="border:${borderStyle}; background:#e9f5f2; border-radius:10px; padding:15px; text-align:center; box-shadow: 0 4px 8px rgba(42, 157, 143, 0.2); word-wrap: break-word; overflow-wrap: break-word;">`;
+
+        html += `<h2 style="${styleString(elements.title, 'margin: 0 0 10px 0; color: #264653;')}">${escapeHtml(title)}</h2>`;
+        if(subtitle) {
+          html += `<p class="subtitle" style="${styleString(elements.subtitle, 'font-style: italic; margin: 0 0 15px; color: #2a9d8f;')}">${escapeHtml(subtitle)}</p>`;
+        }
+        if(description) {
+          html += `<p class="description" style="${styleString(elements.description, 'margin: 0 0 10px; color: #555;')}">${escapeHtml(description)}</p>`;
+        }
+        if(student) {
+          html += `<p class="studentName" style="${styleString(elements.student, 'margin: 0 0 10px; color: #555;')}">Student: ${escapeHtml(student)}</p>`;
+        }
+        if(professor) {
+          html += `<p class="professorName" style="${styleString(elements.professor, 'margin: 0 0 10px; color: #555;')}">Professor: ${escapeHtml(professor)}</p>`;
+        }
+        if(imageUrl) {
+          if (isValidUrl(imageUrl)) {
+            html += `<img src="${escapeHtml(imageUrl)}" alt="Project image" style="max-width:100%; max-height:140px; margin-top:10px; border-radius:8px; object-fit:contain; box-shadow: 0 3px 6px rgba(0,0,0,0.1);" />`;
+          } else {
+            html += `<p style="color:#c0392b; font-weight:bold;">Invalid image URL, ignoring image.</p>`;
+          }
+        }
+        html += '</div>';
+
+        elements.outputSection.innerHTML = html;
+        elements.outputSection.focus();
+        elements.downloadPdfBtn.disabled = false;
+      }
+
+      function clearFields() {
+        Object.values(elements).forEach(el => {
+          if(el instanceof HTMLInputElement) {
+            if(el.type === 'checkbox'){
+              el.checked = false;
+            } else {
+              el.value = '';
+            }
+          } else if(el instanceof HTMLSelectElement) {
+            el.selectedIndex = 0;
+          } else if(el instanceof HTMLTextAreaElement) {
+            el.value = '';
+          }
+        });
+
+        // Set font sizes defaults
+        elements.titleFontSize.value = 24;
+        elements.subtitleFontSize.value = 18;
+        elements.descriptionFontSize.value = 14;
+        elements.studentFontSize.value = 14;
+        elements.professorFontSize.value = 14;
+
+        elements.outputSection.innerHTML = '';
+        elements.downloadPdfBtn.disabled = true;
+
+        elements.title.input.focus();
+      }
+
+      async function downloadPdf() {
+        const frontPageEl = document.getElementById('projectFrontPage');
+        if (!frontPageEl) {
+          alert('Please generate the front page first.');
+          return;
+        }
+
+        try {
+          const canvas = await html2canvas(frontPageEl, {
+            scale: 3,
+            backgroundColor: null,
+            useCORS: true,
+          });
+          const imgData = canvas.toDataURL('image/png');
+
+          const pdf = new jsPDF({
+            unit: 'mm',
+            format: 'a4',
+            orientation: 'portrait'
+          });
+
+          const pageWidth = pdf.internal.pageSize.getWidth();
+          const pageHeight = pdf.internal.pageSize.getHeight();
+          const margin = 15;
+
+          let imgProps = pdf.getImageProperties(imgData);
+          let pdfWidth = pageWidth - margin * 2;
+          let pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+          if(pdfHeight > pageHeight - margin * 2) {
+            pdfHeight = pageHeight - margin * 2;
+            pdfWidth = (imgProps.width * pdfHeight) / imgProps.height;
+          }
+
+          const x = (pageWidth - pdfWidth) / 2;
+          const y = (pageHeight - pdfHeight) / 2;
+
+          pdf.addImage(imgData, 'PNG', x, y, pdfWidth, pdfHeight);
+
+          pdf.save('project-frontpage.pdf');
+        } catch(err) {
+          alert('Sorry, failed to generate PDF. Please try again.');
+          console.error(err);
+        }
+      }
+
+      elements.generateBtn.addEventListener('click', generateFrontPage);
+      elements.resetBtn.addEventListener('click', clearFields);
+      elements.downloadPdfBtn.addEventListener('click', downloadPdf);
+
+      Object.values(elements).forEach(el => {
+        if (el) {
+          el.addEventListener('keydown', e => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              generateFrontPage();
+            }
+          });
+        }
+      });
+
+      elements.title.input.focus();
+  })();
+  </script>
+</body>
+</html>
+
